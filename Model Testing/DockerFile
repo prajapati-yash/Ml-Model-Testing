@@ -1,14 +1,26 @@
-FROM jupyter/base-notebook
+FROM jupyter/base-notebook:python-3.9
 
-# Update package lists
+USER root
+
+# Set permissions for the apt cache directory
+RUN mkdir -p /var/lib/apt/lists/partial
+RUN chmod 777 /var/lib/apt/lists/partial
+
 RUN apt-get update -y
 
 # Install the Python packages
+
+ADD /input input
+
 COPY requirements.txt .
 
 RUN python3 -m pip install --upgrade pip
 
+RUN apt-get install -y build-essential python3-dev
+
 # Install the Python packages
+RUN pip install --upgrade pip setuptools
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 RUN pip install -U scikit-learn
